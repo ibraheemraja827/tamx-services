@@ -11,7 +11,6 @@ export default function Navbar() {
         <Link to="/" className="flex items-center"><img src="/tamx-logo.png" alt="TAMx" className="h-9 w-auto" /></Link>
 
         <ul className="flex items-center gap-8 text-sm text-foreground/75">
-          <li><Link to="/" className="hover:text-foreground">Home</Link></li>
 
           <li
             className="relative"

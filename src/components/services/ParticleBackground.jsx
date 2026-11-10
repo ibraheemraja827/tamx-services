@@ -103,7 +103,7 @@ export default function ParticleBackground({ slug }) {
   useEffect(() => {
     const c = ref.current;
     const ctx = c.getContext("2d");
-    const pts = shapes[byService[slug] || "rings"]();
+    const pts = shapes[byService[slug] || "rings"]().filter((_, i) => i % 3 === 0);
     let w, h, raf, a = 0;
 
     const resize = () => {
@@ -119,14 +119,14 @@ export default function ParticleBackground({ slug }) {
       ctx.clearRect(0, 0, w, h);
       a += 0.003;
       const ca = Math.cos(a), sa = Math.sin(a), ct = Math.cos(0.4), st = Math.sin(0.4);
-      const cx = w > 900 ? w * 0.24 : w / 2, cy = h * 0.5, S = Math.min(w, h) * 0.5;
+      const cx = w > 900 ? w * 0.24 : w / 2, cy = h * 0.5, S = Math.min(w, h) * 0.42;
       for (const p of pts) {
         const x = p[0] * ca + p[2] * sa, z = -p[0] * sa + p[2] * ca;
         const y2 = p[1] * ct - z * st, z2 = p[1] * st + z * ct;
         const f = 2.6 / (2.6 - z2 * 0.8);
-        const al = Math.min(0.85, Math.max(0.12, 0.25 + 0.55 * ((z2 + 1.4) / 2.8)));
+        const al = Math.min(0.5, Math.max(0.06, 0.12 + 0.35 * ((z2 + 1.4) / 2.8)));
         ctx.fillStyle = `rgba(122,124,238,${al})`;
-        ctx.fillRect(cx + x * S * f, cy - y2 * S * f, 1.7 * f, 1.7 * f);
+        ctx.fillRect(cx + x * S * f, cy - y2 * S * f, 1.3 * f, 1.3 * f);
       }
       raf = requestAnimationFrame(draw);
     };
@@ -140,5 +140,17 @@ export default function ParticleBackground({ slug }) {
     };
   }, [slug]);
 
-  return <canvas ref={ref} className="fixed inset-0 z-0 pointer-events-none" />;
+  const grid = {
+    backgroundImage: "linear-gradient(rgba(246,246,253,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(246,246,253,0.035) 1px, transparent 1px)",
+    backgroundSize: "56px 56px",
+    maskImage: "radial-gradient(ellipse at 50% 30%, black 20%, transparent 80%)",
+    WebkitMaskImage: "radial-gradient(ellipse at 50% 30%, black 20%, transparent 80%)",
+  };
+
+  return (
+    <>
+      <div className="fixed inset-0 z-0 pointer-events-none" style={grid} />
+      <canvas ref={ref} className="fixed inset-0 z-0 pointer-events-none" />
+    </>
+  );
 }

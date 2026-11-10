@@ -10,16 +10,17 @@ import ServiceDiagram from "../components/services/ServiceDiagram.jsx";
 import { overview } from "../data/overview.js";
 import { details } from "../data/details.js";
 import { processes } from "../data/process.js";
+import { offerDetail, moreFaqs, demoNotes } from "../data/extra.js";
 import Reveal from "../components/services/Reveal.jsx";
 
 const card = "rounded-2xl border border-border bg-card backdrop-blur-sm";
 
 const icons = [Layers, Cpu, Shield, Zap, Globe, Code2];
 
-function Offerings({ s, dt }) {
+function Offerings({ s, dt, od }) {
   const [i, setI] = useState(0);
   const o = s.offerings[i];
-  const inc = [0, 1, 2].map((n) => dt.deliver[(i + n) % dt.deliver.length]);
+  const inc = od?.[i]?.b || [0, 1, 2].map((n) => dt.deliver[(i + n) % dt.deliver.length]);
   return (
     <div className="grid lg:grid-cols-5 gap-5">
       <div className="lg:col-span-2 space-y-2">
@@ -32,7 +33,8 @@ function Offerings({ s, dt }) {
       </div>
       <div key={i} className={`${card} lg:col-span-3 p-8 fade-up`}>
         <h3 className="text-2xl font-bold mb-3">{o.t}</h3>
-        <p className="text-foreground/70 leading-relaxed mb-6">{o.d}</p>
+        <p className="text-foreground/80 leading-relaxed mb-3">{o.d}</p>
+        {od?.[i]?.p && <p className="text-sm text-foreground/60 leading-relaxed mb-6">{od[i].p}</p>}
         <p className="text-xs uppercase tracking-widest text-lav mb-3">Typically includes</p>
         <ul className="space-y-2 mb-6">
           {inc.map((x) => <li key={x} className="flex items-start gap-3 text-sm text-foreground/75"><CheckCircle2 size={18} className="text-lav shrink-0 mt-0.5" />{x}</li>)}
@@ -79,7 +81,7 @@ function FAQ({ faqs }) {
 export default function ServiceDetail() {
   const { slug } = useParams();
   const s = services.find((x) => x.slug === slug);
-  if (!s) return <Navigate to="/" replace />;
+  if (!s) return <Navigate to="/services/product-design" replace />;
 
   const others = services.filter((x) => x.slug !== s.slug).slice(0, 3);
   const ov = overview[s.slug];
@@ -92,11 +94,11 @@ export default function ServiceDetail() {
       <main key={s.slug} className="relative z-10">
         {/* HERO */}
         <section className="relative px-6 pt-20 pb-16 overflow-hidden">
-          <div className="absolute -top-32 right-0 w-[700px] h-[500px] rounded-full bg-primary/25 blur-[130px] pointer-events-none glow-pulse" />
+          <div className="absolute -top-32 right-0 w-[700px] h-[500px] rounded-full bg-primary/15 blur-[140px] pointer-events-none glow-pulse" />
           <div className="relative max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
             <div className="text-center lg:text-left">
               <nav className="fade-up flex items-center justify-center lg:justify-start gap-2 text-xs text-foreground/50 mb-6">
-                <Link to="/" className="hover:text-foreground">Home</Link><span>/</span><span>Services</span><span>/</span><span className="text-lav">{s.title}</span>
+                <span>Services</span><span>/</span><span className="text-lav">{s.title}</span>
               </nav>
               <span className="fade-up inline-block px-4 py-1.5 mb-6 rounded-full border border-lav/30 bg-accent/10 text-xs text-lav">
                 {s.badge}
@@ -160,12 +162,22 @@ export default function ServiceDetail() {
         <section id="demo" className="max-w-6xl mx-auto px-6 py-20">
           <Head tag="Interactive demo" title={demoMeta[s.slug][0]} sub={demoMeta[s.slug][1]} />
           <Reveal><ServiceDemo slug={s.slug} /></Reveal>
+          <div className="grid md:grid-cols-3 gap-4 mt-6">
+            {demoNotes[s.slug].map((n, i) => (
+              <Reveal key={n} delay={i * 100}>
+                <div className="flex gap-3 h-full rounded-xl border border-border bg-card px-5 py-4">
+                  <span className="text-lav font-semibold">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="text-sm text-foreground/65">{n}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </section>
 
         {/* OFFERINGS */}
         <section id="offer" className="max-w-6xl mx-auto px-6 py-20">
           <Head tag="What we offer" title={`${s.title} services`} sub="Select a service to see what is included and who it is for." />
-          <Offerings key={s.slug} s={s} dt={dt} />
+          <Offerings key={s.slug} s={s} dt={dt} od={offerDetail[s.slug]} />
         </section>
 
         {/* DELIVERABLES + USE CASES */}
@@ -216,6 +228,16 @@ export default function ServiceDetail() {
               </Reveal>
             ))}
           </div>
+          <Reveal>
+            <div className={`${card} mt-8 p-6 grid md:grid-cols-3 gap-6`}>
+              {[["Weekly updates", "Short progress reports and demos every week."], ["Dedicated lead", "One point of contact who owns delivery."], ["Full documentation", "Clear handover so you are never locked in."]].map(([a, b]) => (
+                <div key={a} className="flex gap-3">
+                  <CheckCircle2 size={20} className="text-lav shrink-0 mt-0.5" />
+                  <div><p className="font-medium text-sm">{a}</p><p className="text-xs text-foreground/55 mt-1">{b}</p></div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </section>
 
         {/* STACK + INDUSTRIES */}
@@ -256,8 +278,8 @@ export default function ServiceDetail() {
 
         {/* FAQ */}
         <section id="faq" className="max-w-6xl mx-auto px-6 py-20">
-          <Head tag="FAQ" title="Frequently asked questions" />
-          <FAQ faqs={s.faqs} />
+          <Head tag="FAQ" title="Frequently asked questions" sub="Everything you need to know before getting started." />
+          <FAQ faqs={[...s.faqs, ...moreFaqs[s.slug]]} />
         </section>
 
         {/* CONTACT */}
@@ -273,6 +295,15 @@ export default function ServiceDetail() {
                     <li key={x} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-lav" />{x}</li>
                   ))}
                 </ul>
+                <div className="mt-8 space-y-4">
+                  <p className="text-xs uppercase tracking-widest text-lav">What happens next</p>
+                  {[["We review your request", "Within one business day."], ["Discovery call", "A short call to confirm scope and goals."], ["Detailed proposal", "Timeline, approach and estimate for your approval."]].map(([a, b], i) => (
+                    <div key={a} className="flex gap-4">
+                      <span className="w-7 h-7 shrink-0 rounded-full bg-accent/25 text-lav text-xs flex items-center justify-center">{i + 1}</span>
+                      <div><p className="text-sm font-medium">{a}</p><p className="text-xs text-foreground/55">{b}</p></div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <QuoteWizard service={s.slug} />
             </div>
