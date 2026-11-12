@@ -5,15 +5,15 @@ import ServiceDemo, { demoMeta } from "../components/services/ServiceDemo.jsx";
 import QuoteWizard from "../components/services/QuoteWizard.jsx";
 import { useParams, Navigate, Link } from "react-router-dom";
 import { services } from "../data/services.js";
-import ParticleBackground from "../components/services/ParticleBackground.jsx";
 import ServiceDiagram from "../components/services/ServiceDiagram.jsx";
 import { overview } from "../data/overview.js";
 import { details } from "../data/details.js";
 import { processes } from "../data/process.js";
 import { offerDetail, moreFaqs, demoNotes } from "../data/extra.js";
+import { serviceIcons } from "../data/icons.js";
 import Reveal from "../components/services/Reveal.jsx";
 
-const card = "rounded-2xl border border-border bg-card backdrop-blur-sm";
+const card = "rounded-3xl border border-border bg-card backdrop-blur-sm";
 
 const icons = [Layers, Cpu, Shield, Zap, Globe, Code2];
 
@@ -25,14 +25,14 @@ function Offerings({ s, dt, od }) {
     <div className="grid lg:grid-cols-5 gap-5">
       <div className="lg:col-span-2 space-y-2">
         {s.offerings.map((x, k) => (
-          <button key={x.t} onClick={() => setI(k)} className={`w-full text-left flex items-center gap-4 rounded-xl border px-5 py-4 transition ${i === k ? "border-accent bg-accent/15" : "border-border bg-card hover:border-accent/50"}`}>
-            <span className="w-10 h-10 shrink-0 rounded-lg bg-accent/20 text-lav flex items-center justify-center">{createElement(icons[k % icons.length], { size: 20 })}</span>
+          <button key={x.t} onClick={() => setI(k)} className={`w-full text-left flex items-center gap-4 rounded-2xl border px-5 py-4 transition ${i === k ? "border-accent bg-accent/15" : "border-border bg-card hover:border-accent/50"}`}>
+            <span className="w-11 h-11 shrink-0 rounded-xl border border-border bg-foreground/10 text-lav flex items-center justify-center shadow-[0_0_24px_rgba(162,163,233,0.18)]">{createElement(icons[k % icons.length], { size: 20 })}</span>
             <span className="font-medium">{x.t}</span>
           </button>
         ))}
       </div>
       <div key={i} className={`${card} lg:col-span-3 p-8 fade-up`}>
-        <h3 className="text-2xl font-bold mb-3">{o.t}</h3>
+        <h3 className="text-2xl font-semibold mb-3">{o.t}</h3>
         <p className="text-foreground/80 leading-relaxed mb-3">{o.d}</p>
         {od?.[i]?.p && <p className="text-sm text-foreground/60 leading-relaxed mb-6">{od[i].p}</p>}
         <p className="text-xs uppercase tracking-widest text-lav mb-3">Typically includes</p>
@@ -52,8 +52,8 @@ function Offerings({ s, dt, od }) {
 function Head({ tag, title, sub }) {
   return (
     <Reveal className="text-center max-w-2xl mx-auto mb-12">
-      <p className="text-xs tracking-[0.25em] uppercase text-lav mb-3">{tag}</p>
-      <h2 className="text-3xl md:text-4xl font-bold mb-3">{title}</h2>
+      <p className="text-xs tracking-widest uppercase text-lav mb-3">{tag}</p>
+      <h2 className="text-2xl md:text-3xl font-semibold mb-3">{title}</h2>
       {sub && <p className="text-foreground/60">{sub}</p>}
     </Reveal>
   );
@@ -81,36 +81,36 @@ function FAQ({ faqs }) {
 export default function ServiceDetail() {
   const { slug } = useParams();
   const s = services.find((x) => x.slug === slug);
-  if (!s) return <Navigate to="/services/product-design" replace />;
+  if (!s) return <Navigate to="/services" replace />;
 
   const others = services.filter((x) => x.slug !== s.slug).slice(0, 3);
   const ov = overview[s.slug];
   const dt = details[s.slug];
   const steps = processes[s.slug];
+  const Icon = serviceIcons[s.slug];
 
   return (
     <>
-      <ParticleBackground key={s.slug} slug={s.slug} />
       <main key={s.slug} className="relative z-10">
         {/* HERO */}
         <section className="relative px-6 pt-20 pb-16 overflow-hidden">
-          <div className="absolute -top-32 right-0 w-[700px] h-[500px] rounded-full bg-primary/15 blur-[140px] pointer-events-none glow-pulse" />
           <div className="relative max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
             <div className="text-center lg:text-left">
+              <div className="fade-up mb-6 flex justify-center lg:justify-start"><span className="flex w-14 h-14 rounded-2xl border border-border bg-foreground/10 items-center justify-center text-lav shadow-[0_0_40px_rgba(162,163,233,0.2)]"><Icon size={26} /></span></div>
               <nav className="fade-up flex items-center justify-center lg:justify-start gap-2 text-xs text-foreground/50 mb-6">
-                <span>Services</span><span>/</span><span className="text-lav">{s.title}</span>
+                <Link to="/services" className="hover:text-foreground">Services</Link><span>/</span><span className="text-lav">{s.title}</span>
               </nav>
               <span className="fade-up inline-block px-4 py-1.5 mb-6 rounded-full border border-lav/30 bg-accent/10 text-xs text-lav">
                 {s.badge}
               </span>
-              <h1 className="fade-up text-4xl md:text-6xl font-bold leading-tight mb-6 text-foreground" style={{ animationDelay: "120ms" }}>
+              <h1 className="fade-up text-4xl md:text-5xl font-semibold leading-tight mb-6 text-foreground" style={{ animationDelay: "120ms" }}>
                 {s.title}
               </h1>
               <p className="fade-up text-lg text-foreground/60 max-w-xl mx-auto lg:mx-0 mb-10" style={{ animationDelay: "240ms" }}>
                 {s.desc}
               </p>
               <div className="fade-up flex flex-wrap justify-center lg:justify-start gap-4" style={{ animationDelay: "360ms" }}>
-                <a href="#contact" className="px-8 py-3 rounded-full bg-gradient-to-r from-primary to-accent hover:brightness-125 shadow-lg shadow-primary/30 font-medium transition hover:-translate-y-0.5">Get a Free Quote</a>
+                <a href="#contact" className="px-8 py-3 rounded-full bg-primary hover:bg-accent font-medium transition">Get a Free Quote</a>
                 <a href="#offer" className="px-8 py-3 rounded-full border border-border hover:bg-foreground/5 transition">Explore Offerings</a>
               </div>
               <div className="fade-up mt-8 flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-foreground/60" style={{ animationDelay: "480ms" }}>
@@ -127,7 +127,7 @@ export default function ServiceDetail() {
           <div className="relative max-w-4xl mx-auto mt-14 grid grid-cols-3 gap-4">
             {s.stats.map((st, i) => (
               <div key={st.l} className={`${card} py-6 px-3 text-center fade-up`} style={{ animationDelay: `${500 + i * 120}ms` }}>
-                <p className="text-2xl md:text-3xl font-bold text-foreground">{st.v}</p>
+                <p className="text-2xl md:text-3xl font-semibold text-foreground">{st.v}</p>
                 <p className="text-xs md:text-sm text-foreground/60 mt-1">{st.l}</p>
               </div>
             ))}
@@ -137,10 +137,10 @@ export default function ServiceDetail() {
         <SectionNav />
 
         {/* OVERVIEW */}
-        <section id="overview" className="max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-center">
+        <section id="overview" className="max-w-6xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-12 items-center">
           <Reveal>
-            <p className="text-xs tracking-[0.25em] uppercase text-lav mb-3">Overview</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-5">{ov.h}</h2>
+            <p className="text-xs tracking-widest uppercase text-lav mb-3">Overview</p>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-5">{ov.h}</h2>
             {[...ov.p, ...dt.about].map((x) => <p key={x} className="text-foreground/60 leading-relaxed mb-4">{x}</p>)}
           </Reveal>
           <div className="space-y-4">
@@ -159,7 +159,7 @@ export default function ServiceDetail() {
         </section>
 
         {/* LIVE DEMO */}
-        <section id="demo" className="max-w-6xl mx-auto px-6 py-20">
+        <section id="demo" className="max-w-6xl mx-auto px-6 py-16">
           <Head tag="Interactive demo" title={demoMeta[s.slug][0]} sub={demoMeta[s.slug][1]} />
           <Reveal><ServiceDemo slug={s.slug} /></Reveal>
           <div className="grid md:grid-cols-3 gap-4 mt-6">
@@ -175,17 +175,17 @@ export default function ServiceDetail() {
         </section>
 
         {/* OFFERINGS */}
-        <section id="offer" className="max-w-6xl mx-auto px-6 py-20">
+        <section id="offer" className="max-w-6xl mx-auto px-6 py-16">
           <Head tag="What we offer" title={`${s.title} services`} sub="Select a service to see what is included and who it is for." />
           <Offerings key={s.slug} s={s} dt={dt} od={offerDetail[s.slug]} />
         </section>
 
         {/* DELIVERABLES + USE CASES */}
-        <section className="max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-5 gap-8">
+        <section className="max-w-6xl mx-auto px-6 py-16 grid lg:grid-cols-5 gap-8">
           <Reveal className="lg:col-span-2">
             <div className={`${card} p-8 h-full`}>
-              <p className="text-xs tracking-[0.25em] uppercase text-lav mb-3">Deliverables</p>
-              <h3 className="text-2xl font-bold mb-6">What you get</h3>
+              <p className="text-xs tracking-widest uppercase text-lav mb-3">Deliverables</p>
+              <h3 className="text-2xl font-semibold mb-6">What you get</h3>
               <ul className="space-y-4">
                 {dt.deliver.map((x) => (
                   <li key={x} className="flex items-start gap-3 text-foreground/75">
@@ -197,8 +197,8 @@ export default function ServiceDetail() {
           </Reveal>
           <div className="lg:col-span-3 space-y-4">
             <Reveal>
-              <p className="text-xs tracking-[0.25em] uppercase text-lav mb-1">Use cases</p>
-              <h3 className="text-2xl font-bold mb-2">Where this works best</h3>
+              <p className="text-xs tracking-widest uppercase text-lav mb-1">Use cases</p>
+              <h3 className="text-2xl font-semibold mb-2">Where this works best</h3>
             </Reveal>
             {dt.cases.map((c, i) => (
               <Reveal key={c.t} delay={i * 120}>
@@ -212,13 +212,13 @@ export default function ServiceDetail() {
         </section>
 
         {/* PROCESS */}
-        <section id="process" className="max-w-6xl mx-auto px-6 py-20">
+        <section id="process" className="max-w-6xl mx-auto px-6 py-16">
           <Head tag="Our process" title={`How we deliver ${s.title}`} sub="A clear, transparent four-step approach so you always know what is happening and what comes next." />
           <div className="grid md:grid-cols-2 gap-5">
             {steps.map((st, i) => (
               <Reveal key={st.t} delay={(i % 2) * 120}>
                 <div className={`${card} p-7 h-full flex gap-5 hover:border-accent/50 transition duration-300`}>
-                  <span className="text-5xl font-bold leading-none text-lav/30">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="text-5xl font-semibold leading-none text-lav/30">{String(i + 1).padStart(2, "0")}</span>
                   <div>
                     <h3 className="text-lg font-semibold mb-2">{st.t}</h3>
                     <p className="text-sm text-foreground/60 leading-relaxed mb-4">{st.d}</p>
@@ -241,7 +241,7 @@ export default function ServiceDetail() {
         </section>
 
         {/* STACK + INDUSTRIES */}
-        <section className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-6">
+        <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-6">
           <Reveal>
             <div className={`${card} p-8 h-full`}>
               <h3 className="text-xl font-semibold mb-5">Technologies we use</h3>
@@ -261,12 +261,12 @@ export default function ServiceDetail() {
         </section>
 
         {/* WHY TAMX */}
-        <section className="max-w-6xl mx-auto px-6 py-20">
+        <section className="max-w-6xl mx-auto px-6 py-16">
           <Head tag="Why TAMx" title="Why businesses choose us" />
           <div className="grid md:grid-cols-3 gap-5">
             {s.benefits.map((b, i) => (
               <Reveal key={b.t} delay={i * 130}>
-                <div className="h-full rounded-2xl border border-border bg-gradient-to-b from-accent/10 to-transparent p-7 hover:-translate-y-1 transition duration-300">
+                <div className="h-full rounded-xl border border-border bg-card p-7 transition duration-300">
                   <div className="w-10 h-10 mb-4 rounded-full bg-accent/20 text-lav flex items-center justify-center"><CheckCircle2 size={20} /></div>
                   <h3 className="font-semibold mb-2">{b.t}</h3>
                   <p className="text-sm text-foreground/60">{b.d}</p>
@@ -277,18 +277,18 @@ export default function ServiceDetail() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="max-w-6xl mx-auto px-6 py-20">
+        <section id="faq" className="max-w-6xl mx-auto px-6 py-16">
           <Head tag="FAQ" title="Frequently asked questions" sub="Everything you need to know before getting started." />
           <FAQ faqs={[...s.faqs, ...moreFaqs[s.slug]]} />
         </section>
 
         {/* CONTACT */}
-        <section id="contact" className="max-w-6xl mx-auto px-6 py-20">
+        <section id="contact" className="max-w-6xl mx-auto px-6 py-16">
           <Reveal>
-            <div className="grid lg:grid-cols-2 gap-10 rounded-3xl border border-border bg-gradient-to-br from-primary/30 via-card to-transparent p-8 md:p-12">
+            <div className="grid lg:grid-cols-2 gap-10 rounded-xl border border-border bg-card p-8 md:p-12">
               <div>
-                <p className="text-xs tracking-[0.25em] uppercase text-lav mb-3">Get a quote</p>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start with {s.title}?</h2>
+                <p className="text-xs tracking-widest uppercase text-lav mb-3">Get a quote</p>
+                <h2 className="text-2xl md:text-3xl font-semibold mb-4">Ready to start with {s.title}?</h2>
                 <p className="text-foreground/65 mb-8">Tell us about your project. Our team will reply within one business day with next steps.</p>
                 <ul className="space-y-3 text-sm text-foreground/75">
                   {["Free initial consultation", "Clear scope, timeline and estimate", "No obligation"].map((x) => (
@@ -312,11 +312,11 @@ export default function ServiceDetail() {
 
         {/* RELATED */}
         <section className="max-w-6xl mx-auto px-6 pb-10">
-          <Reveal><h2 className="text-2xl font-bold mb-8">Explore more services</h2></Reveal>
+          <Reveal><h2 className="text-2xl font-semibold mb-8">Explore more services</h2></Reveal>
           <div className="grid md:grid-cols-3 gap-5">
             {others.map((o, i) => (
               <Reveal key={o.slug} delay={i * 120}>
-                <Link to={`/services/${o.slug}`} className={`${card} block h-full p-6 hover:border-accent/50 hover:-translate-y-1 transition duration-300`}>
+                <Link to={`/services/${o.slug}`} className={`${card} block h-full p-6 hover:border-accent/50 transition duration-300`}>
                   <h3 className="font-semibold mb-2">{o.title}</h3>
                   <p className="text-sm text-foreground/60 line-clamp-3">{o.desc}</p>
                 </Link>
