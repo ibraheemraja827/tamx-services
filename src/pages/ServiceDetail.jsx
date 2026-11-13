@@ -78,10 +78,11 @@ function FAQ({ faqs }) {
   );
 }
 
-export default function ServiceDetail() {
-  const { slug } = useParams();
+export default function ServiceDetail({ slug: slugProp }) {
+  const params = useParams();
+  const slug = slugProp || params.slug;
   const s = services.find((x) => x.slug === slug);
-  if (!s) return <Navigate to="/services" replace />;
+  if (!s) return <Navigate to="/services/product-design" replace />;
 
   const others = services.filter((x) => x.slug !== s.slug).slice(0, 3);
   const ov = overview[s.slug];
@@ -98,7 +99,7 @@ export default function ServiceDetail() {
             <div className="text-center lg:text-left">
               <div className="fade-up mb-6 flex justify-center lg:justify-start"><span className="flex w-14 h-14 rounded-2xl border border-border bg-foreground/10 items-center justify-center text-lav shadow-[0_0_40px_rgba(162,163,233,0.2)]"><Icon size={26} /></span></div>
               <nav className="fade-up flex items-center justify-center lg:justify-start gap-2 text-xs text-foreground/50 mb-6">
-                <Link to="/services" className="hover:text-foreground">Services</Link><span>/</span><span className="text-lav">{s.title}</span>
+                <span>Services</span><span>/</span><span className="text-lav">{s.title}</span>
               </nav>
               <span className="fade-up inline-block px-4 py-1.5 mb-6 rounded-full border border-lav/30 bg-accent/10 text-xs text-lav">
                 {s.badge}

@@ -30,8 +30,8 @@ export default function SectionNav() {
   }, []);
 
   return (
-    <div className="sticky top-16 z-40 border-b border-border bg-background/80 backdrop-blur">
-      <div className="h-[2px] bg-gradient-to-r from-primary to-lav" style={{ width: `${p}%` }} />
+    <div className="sticky z-40 border-b border-border bg-background/80 backdrop-blur" style={{ top: "var(--header-offset, 0px)" }}>
+      <div className="h-[2px] bg-lav" style={{ width: `${p}%` }} />
       <div className="max-w-6xl mx-auto px-6 py-2.5 flex gap-2 overflow-x-auto text-sm">
         {links.map(([id, label]) => (
           <a
